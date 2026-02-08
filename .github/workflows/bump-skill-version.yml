@@ -1,0 +1,42 @@
+name: Bump skill version
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "skills/*/SKILL.md"
+
+jobs:
+  bump-version:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Bump patch version in changed skills
+        run: |
+          git diff --name-only HEAD~1 HEAD -- 'skills/*/SKILL.md' | while read -r file; do
+            current=$(grep -oP '^\s*version:\s*"\K[0-9]+\.[0-9]+\.[0-9]+' "$file" || true)
+            if [ -z "$current" ]; then
+              echo "No version found in $file, skipping"
+              continue
+            fi
+
+            major=$(echo "$current" | cut -d. -f1)
+            minor=$(echo "$current" | cut -d. -f2)
+            patch=$(echo "$current" | cut -d. -f3)
+            new_version="$major.$minor.$((patch + 1))"
+
+            sed -i "s/version: \"$current\"/version: \"$new_version\"/" "$file"
+            echo "Bumped $file: $current -> $new_version"
+          done
+
+      - name: Commit version bump
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add 'skills/*/SKILL.md'
+          git diff --cached --quiet && echo "No version changes" && exit 0
+          git commit -m "chore: bump skill version [skip ci]"
+          git push
