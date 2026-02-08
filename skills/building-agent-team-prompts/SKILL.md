@@ -1,6 +1,9 @@
 ---
 name: building-agent-team-prompts
-description: Use when creating a Claude Code agent team, before spawning teammates. Also use when a user wants to parallelize work across multiple Claude Code instances, or when discussing whether an agent team is the right approach.
+description: Provides a prompt template and best practices for building Claude Code agent teams. Covers team composition, teammate spawn prompts, task breakdown, file ownership, communication protocols, and delegate mode. Use when creating an agent team, spawning teammates, parallelizing work across multiple Claude Code instances, or deciding whether an agent team is the right approach.
+metadata:
+  author: frontboat
+  version: "1.0.0"
 ---
 
 # Building Agent Team Prompts
